@@ -7,13 +7,16 @@ var uberStrategy = require('passport-uber');
 var https = require('https');
 var bodyParser = require('body-parser');
 var app = express();
-var config = require('./config.js');
+var config = require('./config/config.js');
+require('./config/mongoose.js'); 
 // Get all auth stuff from config file
 // ClientID & ClientSecret for API requests with OAUTH
 var clientID = config.ClientID;
 var clientSecret = config.ClientSecret;
+
 // ServerID for API requests without OAUTH
 var ServerID = config.ServerID;
+
 // sessionSecret used by passport
 var sessionSecret = "UBERAPIROCKS" 
 
@@ -26,6 +29,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(__dirname + '/client'));
 app.set('views', __dirname + '/client/views');
+// remove? not using ejs or views 
 app.set('view engine','ejs');
 // bodyparser for handling post data
 app.use(bodyParser.urlencoded({extended: true}));
@@ -61,6 +65,7 @@ function getRequest(endpoint, callback) {
     callback(err, null);
   });
 }
+
 // _______________ BEGIN PASSPORT STUFF ________________
 // Serialize and deserialize users used by passport
 passport.serializeUser(function (user, done){
