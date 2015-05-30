@@ -11,3 +11,7 @@ We use the [sandbox environment](https://developer.uber.com/v1/sandbox/) provide
 To get this working you will need to 1) Install all of your dependencies using "sudo npm install" then 2) modify the sampleconfig.js file and rename it.
 
 [Uber API Docs](https://developer.uber.com/v1/endpoints/)
+
+# Our ReadMe
+
+GuerillaLove is an uber-powered community service that helps people in our community create community projects and engage local community members to complete them. 
