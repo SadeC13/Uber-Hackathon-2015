@@ -17,7 +17,7 @@ var eventSchema = new mongoose.Schema({
 	image_url: String,
 	category: String,
 	volunteers: [{type: Schema.Types.ObjectId, ref: 'User'}],
-	created_at: { type: Date, default: Date.now }]
+	created_at: [{ type: Date, default: Date.now }]
 });
 
 mongoose.model('Event', eventSchema);
