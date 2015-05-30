@@ -1,4 +1,5 @@
-/config.js
+/config/config.js
 *.DS_store
+/config.js
 /node_modules
 *.swp
