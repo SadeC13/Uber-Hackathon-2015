@@ -7,12 +7,14 @@
 		nav{
 			margin-bottom: none;
 		}
-		.jumbotron{
-			position: relative;
-			top: -20px;
-			height: 400px;
-			background-color: #E9E9FF;
-			border-bottom: 3px solid lightgrey;
+		i{
+			color: #991F00;
+		}
+		.container{
+			border: 1px solid lightgrey;
+		}
+		.col-md-5{
+			border: 1px solid lightgrey;
 		}
 	</style>
 </head>
@@ -26,7 +28,7 @@
 		        	<span class="icon-bar"></span>
 		        	<span class="icon-bar"></span>
 		    	</button>
-		    	<a class="navbar-brand" href="/">Guerrilla<i class="fa fa-heart-o"></i></a>
+		    	<a class="navbar-brand" href="../views/">Guerrilla<i class="fa fa-heart-o"></i></a>
 		    </div>
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      <ul class="nav navbar-nav">
@@ -40,6 +42,64 @@
 		    </div>
 		</div>
 	</nav>
-	
+	<div class="container">
+		<div class="row">
+			<h1>Two Ways to Contribute</h1>
+		</div>
+		<div class="row">
+
+			<div id="coordinator" class="col-md-5" name="coordinator">
+				<label for="coordinator">
+					<h2>1</h2>
+					<h4>Become a Coordinator</h4>
+				</label>
+				<div class="checkbox">
+					<ul>
+						<li><input type="checkbox">Have an account with <a href="">Uber</a></li>
+							<ul>
+								<li><a href="">Login</a> or <a href="">Create an Account</a></li>
+							</ul>
+						<li><input type="checkbox">Have a Great Cause/Idea</li>
+							<ul>
+								<li>Something you're passionate about</li>
+								<li>ex. beach cleanup, gardening project, fundraiser, etc.</li>
+							</ul>
+						<li><input type="checkbox">Go <a href="">here</a> to add your event</li>
+							<ul>
+								<li>Select a date/time, give a description, and set how many people you'd like to join you!</li>
+							</ul>
+						<li><input type="checkbox">Go out and make a difference!</li>
+							<ul>
+								<li>Don't forget to check in to see how many volunteers your cause has and you're project rating (the more stars, the better!)</li>
+							</ul>
+					</ul>
+				</div>
+			</div>
+			<div id="volunteer" class="col-md-5" name="volunteer">
+				<label for="volunteer">
+					<h2>2</h2>
+					<h4>Join A Cause</h4>
+				</label>
+				<div class="checkbox">
+					<ul>
+						<li><input type="checkbox">Visit our <a href="">events page</a> to see the projects happening right now!</li>
+							<ul>
+								<li>Browse through causes helping out your community.</li>
+							</ul>
+						<li><input type="checkbox">Join a Cause</li>
+						<li><input type="checkbox">Pick Up</li>
+							<ul>
+								<li>Get picked up by one of our friends at <a href="">Uber</a>.</li>
+								<li>If you join a cause early on, the event coordinator may have sponsored rides. Get there for FREE!</li>
+							</ul>
+						<li><input type="checkbox">Better your Community</li>
+							<ul>
+								<li>Clean up, garden, or fundraise your way to a better community and meet friends with similar goals along the way.</li>
+							</ul>
+					</ul>
+				</div>				
+			</div>
+		</div>
+	</div>
 </body>
 </html>
