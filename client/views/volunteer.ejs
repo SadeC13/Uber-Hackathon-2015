@@ -1,0 +1,64 @@
+<html>
+	<head>
+		<title>Guerrilla Love | Volunteer</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+		<style type="text/css">
+			body{
+				background-color: #454551;
+			}
+			nav{
+				margin-bottom: none;
+			}
+			i{
+				color: #991F00;
+			}
+			.jumbotron{
+				position: relative;
+				top: 150px;
+				height: 400px;
+				border-bottom: 3px solid lightgrey;
+			}
+			.row{
+				position: relative;
+				left: 9%;
+				top: 23px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="jumbotron">
+				<div class="row">
+					<div class="info col-md-4">
+						<h3><%=project.title%></h3>
+			  			<ul class="list-unstyled col-md-7">
+			  				<li>Location: <%=project.location.address%> </li>
+			  				<li>Date: <%=project.start_time%></li>
+			  				<li>Number of Rides Available: <%=project.max_sponsored_rides - project.ride_count_to_date%></li>
+			  			</ul>
+					</div>
+					<form class="volunteer form-group col-md-6" action='/join' method='post'>
+						<h3>Volunteer Information:</h3>
+						<label>
+							Name:<input type="text" class="form-control" name="name">
+						</label>
+						<label>
+							Phone:<input type="text" class="form-control" name="phone">
+						</label>
+						<label>
+							Email:<input type="text" class="form-control" name="email">
+						</label>
+						<label>
+							Number of people:<input type="text" class="form-control" name="no_people">
+						</label>
+						<input type="hidden" name="latitude" value='37.3768183'>
+						<input type='hidden' name='longitude' value='-121.912378'>
+						<input type='hidden' name='_project' value=<%=project._id%>>
+						<input class="btn btn-default" type="submit" value="Join">
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

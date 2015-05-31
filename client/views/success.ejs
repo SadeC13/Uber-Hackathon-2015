@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<title>Guerrilla Love | Event Summary</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+		<style type="text/css">
+			body{
+				background-color: #B4B9BD;
+			}
+			.jumbotron{
+				position: relative;
+				top: 132px;
+				min-height: 400px;
+				border: 1px solid #454551;
+				color: #454551;
+			}
+			h2{
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="jumbotron">
+				<h2><%= project.title %></h2>
+				<ul class="list-unstyled col-md-5">
+	  				<li>Location: <%=project.location.address%></li>
+	  				<li>Date: <%=project.start_time%></li>
+	  				<li>Volunteers:
+	  					<% for (var i=0; i < project.volunteers.length; i++) { 
+	  							var volunteer = project.volunteers[i];
+  						%>
+  							<li>Name: <%=volunteer.name%></li>
+  							<li>Email: <%=volunteer.email%></li>
+	  					<% } %>
+	  				</li>
+	  				<li>Rides Available: <%=project.max_sponsored_rides - project.ride_count_to_date%></li>
+	  			</ul>
+			    <a class="btn btn-default" href="/">Home</a>		
+			</div>
+		</div>
+	</body>
+</html>

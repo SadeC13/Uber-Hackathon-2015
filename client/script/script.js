@@ -45,7 +45,7 @@ onchanged: function(currentLocation, radius, isMarkerDropped) {
 
   });
 });
-  // });
+
 angular.module('myApp').controller('TimepickerDemoCtrl', function ($scope, $log) {
   $scope.mytime = new Date();
 
@@ -84,4 +84,32 @@ angular.module('myApp').controller('TimepickerDemoCtrl', function ($scope, $log)
        value: new Date(1970, 0, 1, 14, 57, 0)
      };
    }]);
+
+myApp.factory('eventFactory', function($http) {
+	events = [];
+	var factory = {}; 
+
+	factory.getEvents = function(callback) {
+			$http.get('/show').success(function(output) {
+				events = output; 
+				for (var i = 0; i < events.length; i++) {
+					// ACTUALLY USE LAT/LONG?
+					// $http.post('/show_price_estimate', {latitude: 37.378276, longitude: -121.917581, project: events[i]}).success(function(result){
+					// 	events[i].estimate_price = result.estimate_price; 
+					// 	events[i].isSponsored = result.isSponsored;
+					// });
+				}
+				console.log(events);
+				callback(events);
+			});
+		}
+	return factory;
+}); 
+
+myApp.controller('eventController', function($scope, eventFactory) {
+	$scope.events; 
+	eventFactory.getEvents(function(data) {
+		$scope.events = data;
+	});
+});
 
