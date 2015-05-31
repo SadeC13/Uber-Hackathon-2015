@@ -5,7 +5,6 @@ myApp.config(function ($routeProvider){
 	$routeProvider
 		.when('/coordinate', {templateUrl:'partials/coordinate.html'})
 		.when('/contribute', {templateUrl:'partials/contribute.html'})
-		.when('/coordinate', {templateUrl:'partials/coordinate.html'})
 
 		.otherwise({redirectTo:'/'});
 });
