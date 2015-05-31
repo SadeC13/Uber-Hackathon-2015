@@ -24,5 +24,12 @@ var eventSchema = new mongoose.Schema({
 	created_at: { type: Date, default: Date.now }
 });
 
+eventSchema.path('title').required(true, 'Event title cannot be blank');
+eventSchema.path('start_time').required(true, 'Event start_time cannot be blank');
+eventSchema.path('end_time').required(true, 'Event end_time cannot be blank');
+eventSchema.path('location.address').required(true, 'Event location.address cannot be blank');
+eventSchema.path('location.latitude').required(true, 'Event location.latitude cannot be blank');
+eventSchema.path('location.longitude').required(true, 'Event location.longitude cannot be blank');
+
 mongoose.model('Event', eventSchema);
 

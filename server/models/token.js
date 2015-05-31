@@ -8,5 +8,6 @@ var tokenSchema = new mongoose.Schema({
 	no_rides: Number,
 	created_at: { type: Date, default: Date.now }
 });
+tokenSchema.path('token').required(true, 'Token cannot be blank'); 
 
 mongoose.model('Token', tokenSchema);
