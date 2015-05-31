@@ -167,6 +167,8 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
   request.body = {
     title: 'Guerilla Gardening',
     location: '1980 Zanker Rd San Jose, CA 95112',
+    start_date: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
+    end_date: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
     start_time: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
     end_time: new Date('Sat Jun 1 2015 17:26:58 GMT-0700 (PDT)'),
     community_impact_rating: 4,
@@ -183,7 +185,6 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
   var latitude;
   var longitude;
   geocoder.geocode(request.body.location, function(err, res) {
-    // console.log('coordinates: ', res);
     latitude = res[0].latitude;
     longitude = res[0].longitude;
 
@@ -194,8 +195,10 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
         latitude: latitude,
         longitude: longitude
       },
-      start_time: request.body.start_time,
-      end_time: request.body.end_time,
+      start_time: new Date(request.body.start_date.getFullYear(),request.body.start_date.getMonth(),request.body.start_date.getDate(), 
+               request.body.start_time.getHours(), request.body.start_time.getMinutes(), request.body.start_time.getSeconds()),
+      end_time: new Date(request.body.end_date.getFullYear(),request.body.end_date.getMonth(),request.body.end_date.getDate(), 
+               request.body.end_time.getHours(), request.body.end_time.getMinutes(), request.body.end_time.getSeconds()),
       community_impact_rating: request.body.community_impact_rating,
       spend_limit: request.body.spend_limit,
       total_spent: 0,
@@ -237,7 +240,8 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
                   if (err) { console.log(err); }
                   else { 
                     console.log('Successfully added token association to project!', project);
-                    response.json(e);
+                    //response.json(e);
+                    response.sendFile(path.join(__dirname,'./client/views/index.html'));
                   }
                 }); 
               }
@@ -355,14 +359,12 @@ app.post('/show_price_estimate', function(req, res){
 // - adds user to DB, updates user events, updates event
 app.post('/join', function(req, response) {
   req.body = {
-    volunteer: {
-      name: 'Alison Rugar', 
-      phone: '408-628-2220',
-      email: 'ali@gmail.com',
-      no_people: 2,
-      latitude: 37.3768183,
-      longitude: -121.912378
-    },
+    name: 'Alison Rugar', 
+    phone: '408-628-2220',
+    email: 'ali@gmail.com',
+    no_people: 2,
+    latitude: 37.3768183,
+    longitude: -121.912378,
     _project: '556b3779a47074658166c2ae'
   }
 

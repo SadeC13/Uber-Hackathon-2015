@@ -60,86 +60,22 @@
 			<i class="fa fa-calendar fa-5x"></i>
 		</div>
 	</div>
-	<div class="container">
-		<div class="btn-group" role="group" aria-label="...">
-			<button type="button" class="btn btn-default">All</button>
-			<button type="button" class="btn btn-default">Education</button>
-			<button type="button" class="btn btn-default">Enviromental</button>
-			<button type="button" class="btn btn-default">Fundraising</button>
-		</div>
-		<form class='form-group'>
-			<label>
-				<select name="filter" class='form-control'>
-					<option>Filter by:</option>
-					<option>Recently Added</option>
-					<option>Date</option>
-					<option># of Volunteers</option>
-				</select>
-			</label>
-		</form>
-		<div id="main" class="panel panel-success">
-  			<div class="panel-heading">
+	<div class="container" ng-controller=''>
+		<input type='text' placeholder='Search' ng-model='search'>
+		<div ng-repeat='event in events | filter:search'>
+			<div class="panel-heading">
   				<div class="row">
-    			<h3 class="panel-title">Ocean Beach CleanUp</h3>
+    			<h3 class="panel-title" ng-bind='event.title'></h3>
     			<i class="fa fa-leaf fa-2x icon"></i>
     			</div>
   			</div>
 	  		<div class="panel-body">
 	  			<ul class="list-unstyled col-md-5">
-	  				<li><!-- description --><p></p></li>
-	  				<li>Location:</li>
-	  				<li>Date:</li>
-	  				<li>Time:</li>
-	  				<li>Number of Volunteers:</li>
-	  				<li>Rides Available:</li>
+	  				<li>Location:<span ng-bind='event.location.address'>Location</span></li>
+	  				<li>Date:<span ng-bind='event.start_time'>Date</span></li>
+	  				<li>Rides Available:<span ng-bind='event.max_sponsored_rides - event.ride_count_to_date'></span>4</li>
 	  			</ul>
-	  		</div>
-<!-- 	  		<div id="en" class="rating">
-	  			<i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star-o fa-3x"></i><i class="fa fa-star-o fa-3x"></i>
-	  		</div> -->
-  			<input class="join btn btn-success" type="submit" value="Join">
-		</div>
-		
-		<div class="panel panel-info">
-  			<div class="panel-heading">
-    			<h3 class="panel-title">Family Museum Day</h3>
-    			<i class="fa fa-book fa-2x icon"></i>
-  			</div>
-	  		<div class="panel-body">
-	  			<ul class="list-unstyled">
-	  				<li><!-- description --></li>
-	  				<li>Location:</li>
-	  				<li>Date:</li>
-	  				<li>Time:</li>
-	  				<li>Number of Volunteers:</li>
-	  				<li>Rides Available:</li>
-	  			</ul>
-	  		</div>
-<!-- 	  		<div id="ed" class="rating">
-	  			<i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star-o fa-3x"></i><i class="fa fa-star-o fa-3x"></i>
-	  		</div> -->
-  			<input class="join btn btn-info" type="submit" value="Join">
-		</div>
-		
-		<div class="panel panel-warning">
-  			<div class="panel-heading">
-    			<h3 class="panel-title">Red Cross Nepal Relief Fundraiser</h3>
-    			<i class="fa fa-money fa-2x icon"></i>
-  			</div>
-	  		<div class="panel-body">
-	  			<ul class="list-unstyled">
-	  				<li><!-- description --><p></p></li>
-	  				<li>Location:</li>
-	  				<li>Date:</li>
-	  				<li>Time:</li>
-	  				<li>Number of Volunteers:</li>
-	  				<li>Rides Available:</li>
-	  			</ul>
-	  		</div>
-<!-- 	  		<div id="f" class="rating">
-	  			<i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star-o fa-3x"></i><i class="fa fa-star-o fa-3x"></i>
-	  		</div> -->
-  			<input class="join btn btn-warning" type="submit" value="Join">
+	  			<a class="join btn btn-success" href={{'/join_event/'+event._id}} value="Join">
 		</div>
 	</div>
 </body>
