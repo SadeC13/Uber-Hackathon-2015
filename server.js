@@ -164,41 +164,44 @@ app.get('/coordinate', ensureAuthenticated, function(request, response) {
 
 // create an event
 app.post('/create_event', ensureAuthenticated, function(request, response) {
-  request.body = {
-    title: 'Guerilla Gardening',
-    location: '1980 Zanker Rd San Jose, CA 95112',
-    start_date: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
-    end_date: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
-    start_time: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
-    end_time: new Date('Sat Jun 1 2015 17:26:58 GMT-0700 (PDT)'),
-    community_impact_rating: 4,
-    spend_limit: 200,    
-    max_sponsored_rides: 7,
-    max_per_ride: 25,
-    image_url: 'http://upload.wikimedia.org/wikipedia/commons/2/2b/Flower_garden,_Botanic_Gardens,_Churchtown_2.JPG',
-    category: 'environment',
-    add_user_to_volunteers: 1,
-    user_address_lat: 37.3768183,
-    user_address_long: -121.912378    
-  }
+  // request.body = {
+  //   title: 'Guerilla Gardening',
+  //   location: '1980 Zanker Rd San Jose, CA 95112',
+  //   start_date: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
+  //   end_date: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
+  //   start_time: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
+  //   end_time: new Date('Sat Jun 1 2015 17:26:58 GMT-0700 (PDT)'),
+  //   community_impact_rating: 4,
+  //   spend_limit: 200,    
+  //   max_sponsored_rides: 7,
+  //   max_per_ride: 25,
+  //   image_url: 'http://upload.wikimedia.org/wikipedia/commons/2/2b/Flower_garden,_Botanic_Gardens,_Churchtown_2.JPG',
+  //   category: 'environment',
+  //   add_user_to_volunteers: 1,
+  //   user_address_lat: 37.3768183,
+  //   user_address_long: -121.912378    
+  // }
+  request.body.add_user_to_volunteers = 1;
+  console.log('REQUEST', request.body);
 
   var latitude;
   var longitude;
-  geocoder.geocode(request.body.location, function(err, res) {
+  geocoder.geocode(request.body.address, function(err, res) {
+    console.log('geocoder', res);
     latitude = res[0].latitude;
     longitude = res[0].longitude;
+    console.log('latitude', latitude);
+    console.log('longitude', longitude);
 
     var project = new Event({
       title: request.body.title,
       location: {
-        address: request.body.location,
+        address: request.body.address,
         latitude: latitude,
         longitude: longitude
       },
-      start_time: new Date(request.body.start_date.getFullYear(),request.body.start_date.getMonth(),request.body.start_date.getDate(), 
-               request.body.start_time.getHours(), request.body.start_time.getMinutes(), request.body.start_time.getSeconds()),
-      end_time: new Date(request.body.end_date.getFullYear(),request.body.end_date.getMonth(),request.body.end_date.getDate(), 
-               request.body.end_time.getHours(), request.body.end_time.getMinutes(), request.body.end_time.getSeconds()),
+      start_time: new Date(request.body.start_date.toString() + ' ' + request.body.start_time.toString()),
+      end_time: new Date(request.body.end_date.toString() + ' ' + request.body.end_time.toString()),
       community_impact_rating: request.body.community_impact_rating,
       spend_limit: request.body.spend_limit,
       total_spent: 0,
@@ -209,6 +212,8 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
       category: request.body.category
     }); 
 
+    console.log('project', project);
+
     // Add user as volunteer to event 
     if (request.body.add_user_to_volunteers) {
       var user = User.findOne({email: request.user.email}, function(err, user) {
@@ -217,7 +222,7 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
          // Save new event in DB
         project.save(function(err, result) {
           if (err) {
-            console.log("Failed to save event!");
+            console.log("Failed to save event!", err);
           } else {
             console.log("Successfully saved event!");
             console.log("Saved event:", result);
@@ -241,7 +246,9 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
                   else { 
                     console.log('Successfully added token association to project!', project);
                     //response.json(e);
-                    response.sendFile(path.join(__dirname,'./client/views/index.html'));
+                    Event.findOne({_id: e.id}).populate('volunteers').exec(function(err, x) {
+                      response.render('success', {project: x});
+                    });
                   }
                 }); 
               }
@@ -252,7 +259,7 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
     } else {
        project.save(function(err, result) {
           if (err) {
-            console.log("Failed to save event!");
+            console.log("Failed to save event!", err);
           } else {
             console.log("Successfully saved event!");
             console.log("Saved event:", result);
@@ -270,7 +277,9 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
                   if (err) { console.log(err); }
                   else { 
                     console.log('Successfully added token association to project!', project); 
-                    response.json(e);
+                    Event.findOne({_id: e.id}).populate('volunteers').exec( function(err, x) {
+                      response.render('success', {project: x});
+                    });
                   }
                 }); 
               }
