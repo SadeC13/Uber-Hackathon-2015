@@ -59,44 +59,44 @@ onchanged: function(currentLocation, radius, isMarkerDropped) {
   });
 });
 
-angular.module('myApp').controller('TimepickerDemoCtrl', function ($scope, $log) {
-  $scope.mytime = new Date();
+// angular.module('myApp').controller('TimepickerDemoCtrl', function ($scope, $log) {
+//   $scope.mytime = new Date();
 
-  $scope.hstep = 1;
-  $scope.mstep = 15;
+//   $scope.hstep = 1;
+//   $scope.mstep = 15;
 
-  $scope.options = {
-    hstep: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    mstep: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
-  };
+//   $scope.options = {
+//     hstep: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+//     mstep: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59]
+//   };
 
-  $scope.ismeridian = true;
-  $scope.toggleMode = function() {
-    $scope.ismeridian = ! $scope.ismeridian;
-  };
+//   $scope.ismeridian = true;
+//   $scope.toggleMode = function() {
+//     $scope.ismeridian = ! $scope.ismeridian;
+//   };
 
-  $scope.update = function() {
-    var d = new Date();
-    d.setHours( 14 );
-    d.setMinutes( 0 );
-    $scope.mytime = d;
-  };
+//   $scope.update = function() {
+//     var d = new Date();
+//     d.setHours( 14 );
+//     d.setMinutes( 0 );
+//     $scope.mytime = d;
+//   };
 
-  $scope.changed = function () {
-    $log.log('Time changed to: ' + $scope.mytime);
-  };
+//   $scope.changed = function () {
+//     $log.log('Time changed to: ' + $scope.mytime);
+//   };
 
-  $scope.clear = function() {
-    $scope.mytime = null;
-  };
+//   $scope.clear = function() {
+//     $scope.mytime = null;
+//   };
 
-});
- angular.module('timeExample', [])
-   .controller('DateController', ['$scope', function($scope) {
-     $scope.example = {
-       value: new Date(1970, 0, 1, 14, 57, 0)
-     };
-   }]);
+// });
+//  angular.module('timeExample', [])
+//    .controller('DateController', ['$scope', function($scope) {
+//      $scope.example = {
+//        value: new Date(1970, 0, 1, 14, 57, 0)
+//      };
+//    }]);
 </script>
 <style>
 .form-group{
@@ -139,15 +139,15 @@ form input{
 					<label for='description'>Description:</label>	
 					<textarea class='form-control' rows=5 cols=47 id='description'></textarea><br><br>
 					<label for="from">From:</label><br>
-					<input type="text" class='form-control' id="from" name="from" placeholder="select start date"><br>
+					<input type='date' name='start_date' placeholder="select start date"><br>
 					<label for="to">To:</label><br>
-					<input type="text" class='form-control' id="to" name="to" placeholder="select end date">
-					<!-- <div ng-controller="TimepickerDemoCtrl"><br> -->
+					<input type="date"  name="end_date" placeholder="select end date">
+					<div ng-controller="TimepickerDemoCtrl"><br>
 					<!-- <div name="myForm" ng-controller="DateController as dateCtrl"> -->
    					<label for="exampleInput">Pick a Start Time:</label>
-   					<input type="time" class='form-control' id="exampleInput" name="input" ng-model="example.value"placeholder="HH:mm:ss" min="12:00:00" max="24:00:00" required />
+   					<input type="time" class='form-control' name="start_time" placeholder="HH:mm:ss" />
    					<label for="exampleInput">Pick an End Time:</label>
-   					<input type="time" class='form-control' id="exampleInput" name="input" ng-model="example.value"placeholder="HH:mm:ss" min="12:00:00" max="24:00:00" required />
+   					<input type="time" class='form-control' name="end_time" placeholder="HH:mm:ss" />
 					<label for="budget"> Max budget per ride:</label>
 					<input type='number' class='form-control' name='spend_limit' placeholder='$ max dollar amount for each ride'>
 					<!-- </div>	 -->
