@@ -34,8 +34,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(__dirname + '/client'));
-//app.set('views', __dirname + '/client/views');
-//app.set('view engine','ejs');
+app.set('views', __dirname + '/client/views');
+app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
@@ -167,6 +167,8 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
   request.body = {
     title: 'Guerilla Gardening',
     location: '1980 Zanker Rd San Jose, CA 95112',
+    start_date: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
+    end_date: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
     start_time: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
     end_time: new Date('Sat Jun 1 2015 17:26:58 GMT-0700 (PDT)'),
     community_impact_rating: 4,
@@ -183,7 +185,6 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
   var latitude;
   var longitude;
   geocoder.geocode(request.body.location, function(err, res) {
-    // console.log('coordinates: ', res);
     latitude = res[0].latitude;
     longitude = res[0].longitude;
 
@@ -194,8 +195,10 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
         latitude: latitude,
         longitude: longitude
       },
-      start_time: request.body.start_time,
-      end_time: request.body.end_time,
+      start_time: new Date(request.body.start_date.getFullYear(),request.body.start_date.getMonth(),request.body.start_date.getDate(), 
+               request.body.start_time.getHours(), request.body.start_time.getMinutes(), request.body.start_time.getSeconds()),
+      end_time: new Date(request.body.end_date.getFullYear(),request.body.end_date.getMonth(),request.body.end_date.getDate(), 
+               request.body.end_time.getHours(), request.body.end_time.getMinutes(), request.body.end_time.getSeconds()),
       community_impact_rating: request.body.community_impact_rating,
       spend_limit: request.body.spend_limit,
       total_spent: 0,
@@ -237,7 +240,8 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
                   if (err) { console.log(err); }
                   else { 
                     console.log('Successfully added token association to project!', project);
-                    response.json(e);
+                    //response.json(e);
+                    response.sendFile(path.join(__dirname,'./client/views/index.html'));
                   }
                 }); 
               }
@@ -350,26 +354,34 @@ app.post('/show_price_estimate', function(req, res){
   });
 })
 
+app.get('/join/:id', function(request, response) {
+  Event.findOne({_id: request.params.id}, function(err, project) {
+    response.render('volunteer', {project: project}); 
+  })
+})
+
 // JOIN (post) - {volunteer: {name:, phone:, email:, latitude:, longitude:, }, _project: }
 // (note: currently does not check for conflicting events and stores a unique instance of the user every time!)
 // - adds user to DB, updates user events, updates event
 app.post('/join', function(req, response) {
-  req.body = {
-    volunteer: {
-      name: 'Alison Rugar', 
-      phone: '408-628-2220',
-      email: 'ali@gmail.com',
-      no_people: 2,
-      latitude: 37.3768183,
-      longitude: -121.912378
-    },
-    _project: '556b3779a47074658166c2ae'
-  }
+  req.body.no_people = parseInt(req.body.no_people);
+  req.body.latitude = parseInt(req.body.latitude);
+  req.body.longitude = parseInt(req.body.longitude);
+  console.log(req.body);
+  // req.body = {
+  //   name: 'Alison Rugar', 
+  //   phone: '408-628-2220',
+  //   email: 'ali@gmail.com',
+  //   no_people: 2,
+  //   latitude: 37.3768183,
+  //   longitude: -121.912378,
+  //   _project: '556b3779a47074658166c2ae'
+  // }
 
   User.findOne({email: req.body.email}, function(err, result) {
     if (err) { console.log(err); }
     else {
-      if (!result) { var user = new User(req.body.volunteer); } 
+      if (!result) { var user = new User(req.body); } 
       else { user = result; }
       user.events.push(req.body._project);
       user.save(function(err, res) {
@@ -389,7 +401,7 @@ app.post('/join', function(req, response) {
           }); 
           Event.findOne({_id: req.body._project}).populate('volunteers').exec(function(err, e) {
             if (err) { console.log(err); }
-            else { response.json(e); }
+            else { response.sendFile(path.join(__dirname,'./client/views/index.html')); }
           }); 
         }
       });
