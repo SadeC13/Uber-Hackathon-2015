@@ -6,8 +6,7 @@ myApp.config(function ($routeProvider){
 		.when('/contribute', {templateUrl:'views/contribute.html'})
 		.when('/about', {templateUrl:'views/about.html'})
 		.when('/events', {templateUrl:'views/events.html'})
-		.when('/mission', {templateUrl:'views/mission.html'})
-		// .when('/login', {templateUrl:'views/login.html'})
+		.when('/mission', {templateUrl:'views/mission.html'})s
 		.when('/coordinate', {templateUrl:'partials/coordinate.html'})
 		.otherwise({redirectTo:'/'});
 });
