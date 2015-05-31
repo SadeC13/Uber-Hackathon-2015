@@ -5,7 +5,11 @@ var eventSchema = new mongoose.Schema({
 	title: String, 
 	_creator: {type: Schema.Types.ObjectId, ref: 'User'},
 	_token: {type: Schema.Types.ObjectId, ref: 'Token'},
-	location: String,
+	location: {
+		address: String,
+		latitude: Number,
+		longitude: Number
+	},
 	start_time: Date,
 	end_time: Date,
 	community_impact_rating: Number,
@@ -17,7 +21,8 @@ var eventSchema = new mongoose.Schema({
 	image_url: String,
 	category: String,
 	volunteers: [{type: Schema.Types.ObjectId, ref: 'User'}],
-	created_at: { type: Date, default: Date.now }]
+	created_at: { type: Date, default: Date.now }
 });
 
 mongoose.model('Event', eventSchema);
+
