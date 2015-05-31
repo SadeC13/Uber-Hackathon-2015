@@ -60,7 +60,7 @@
 			<i class="fa fa-calendar fa-5x"></i>
 		</div>
 	</div>
-	<div class="container" ng-controller=''>
+	<div class="container" ng-controller='eventController'>
 		<input type='text' placeholder='Search' ng-model='search'>
 		<div ng-repeat='event in events | filter:search'>
 			<div class="panel-heading">
@@ -75,7 +75,7 @@
 	  				<li>Date:<span ng-bind='event.start_time'>Date</span></li>
 	  				<li>Rides Available:<span ng-bind='event.max_sponsored_rides - event.ride_count_to_date'></span>4</li>
 	  			</ul>
-	  			<a class="join btn btn-success" href={{'/join_event/'+event._id}} value="Join">
+	  			<a class="join btn btn-success" href={{'/join_event/'+event._id}}>Join</a>
 		</div>
 	</div>
 </body>

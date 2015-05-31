@@ -85,8 +85,8 @@ angular.module('myApp').controller('TimepickerDemoCtrl', function ($scope, $log)
      };
    }]);
 
-varmyApp.factory('eventFactory', function($http) {
-	 events = [];
+myApp.factory('eventFactory', function($http) {
+	events = [];
 	var factory = {}; 
 
 	factory.getEvents = function(callback) {
@@ -94,20 +94,22 @@ varmyApp.factory('eventFactory', function($http) {
 				events = output; 
 				for (var i = 0; i < events.length; i++) {
 					// ACTUALLY USE LAT/LONG?
-					$http.post('/show_price_estimate', {latitude: 37.378276, longitude: -121.917581, project: events[i]}).success(function(result){
-						events[i].estimate_price = result.estimate_price; 
-						events[i].isSponsored = result.isSponsored;
-					});
+					// $http.post('/show_price_estimate', {latitude: 37.378276, longitude: -121.917581, project: events[i]}).success(function(result){
+					// 	events[i].estimate_price = result.estimate_price; 
+					// 	events[i].isSponsored = result.isSponsored;
+					// });
 				}
+				console.log(events);
 				callback(events);
 			});
 		}
+	return factory;
 }); 
 
-myApp.controller('eventController', function($scope, eventFactory)) {
+myApp.controller('eventController', function($scope, eventFactory) {
 	$scope.events; 
 	eventFactory.getEvents(function(data) {
 		$scope.events = data;
 	});
-}
+});
 
