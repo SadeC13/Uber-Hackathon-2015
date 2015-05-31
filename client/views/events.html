@@ -71,11 +71,11 @@
   			</div>
 	  		<div class="panel-body">
 	  			<ul class="list-unstyled col-md-5">
-	  				<li>Location:<span ng-bind='event.location.address'>Location</span></li>
-	  				<li>Date:<span ng-bind='event.start_time'>Date</span></li>
-	  				<li>Rides Available:<span ng-bind='event.max_sponsored_rides - event.ride_count_to_date'></span>4</li>
+	  				<li>Location: <span ng-bind='event.location.address'>Location</span></li>
+	  				<li>Date: <span ng-bind='event.start_time'>Date</span></li>
+	  				<li>Rides Available: <span ng-bind='event.max_sponsored_rides - event.ride_count_to_date'>4</span></li>
 	  			</ul>
-	  			<a class="join btn btn-success" href={{'/join_event/'+event._id}}>Join</a>
+	  			<a class="join btn btn-success" href={{'/join/'+event._id}}>Join</a>
 		</div>
 	</div>
 </body>

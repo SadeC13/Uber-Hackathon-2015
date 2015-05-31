@@ -34,8 +34,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(__dirname + '/client'));
-//app.set('views', __dirname + '/client/views');
-//app.set('view engine','ejs');
+app.set('views', __dirname + '/client/views');
+app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
@@ -354,19 +354,25 @@ app.post('/show_price_estimate', function(req, res){
   });
 })
 
+app.get('/join/:id', function(request, response) {
+  Event.findOne({_id: request.params.id}, function(err, project) {
+    response.render('volunteer', {project: project}); 
+  })
+})
+
 // JOIN (post) - {volunteer: {name:, phone:, email:, latitude:, longitude:, }, _project: }
 // (note: currently does not check for conflicting events and stores a unique instance of the user every time!)
 // - adds user to DB, updates user events, updates event
 app.post('/join', function(req, response) {
-  req.body = {
-    name: 'Alison Rugar', 
-    phone: '408-628-2220',
-    email: 'ali@gmail.com',
-    no_people: 2,
-    latitude: 37.3768183,
-    longitude: -121.912378,
-    _project: '556b3779a47074658166c2ae'
-  }
+  // req.body = {
+  //   name: 'Alison Rugar', 
+  //   phone: '408-628-2220',
+  //   email: 'ali@gmail.com',
+  //   no_people: 2,
+  //   latitude: 37.3768183,
+  //   longitude: -121.912378,
+  //   _project: '556b3779a47074658166c2ae'
+  // }
 
   User.findOne({email: req.body.email}, function(err, result) {
     if (err) { console.log(err); }
