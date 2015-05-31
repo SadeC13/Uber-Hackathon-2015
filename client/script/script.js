@@ -8,7 +8,7 @@ myApp.config(function ($routeProvider){
 		.when('/events', {templateUrl:'views/events.html'})
 		.when('/mission', {templateUrl:'views/mission.html'})
 		// .when('/login', {templateUrl:'views/login.html'})
-		.when('/contribute', {templateUrl:'partials/contribute.html'})
+		.when('/coordinate', {templateUrl:'partials/coordinate.html'})
 		.otherwise({redirectTo:'/'});
 });
 $(function() {
@@ -77,10 +77,10 @@ angular.module('myApp').controller('TimepickerDemoCtrl', function ($scope, $log)
   };
 
 });
- // angular.module('timeExample', [])
- //   .controller('DateController', ['$scope', function($scope) {
- //     $scope.example = {
- //       value: new Date(1970, 0, 1, 14, 57, 0)
- //     };
-   // }]);
+ angular.module('timeExample', [])
+   .controller('DateController', ['$scope', function($scope) {
+     $scope.example = {
+       value: new Date(1970, 0, 1, 14, 57, 0)
+     };
+   }]);
 
