@@ -73,7 +73,6 @@ function getRequest(endpoint, callback) {
 
   });
   req.end();
-
   req.on('error', function(err) {
     callback(err, null);
   });
@@ -255,45 +254,63 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
   
 }); 
 
-app.post('/show_events', function(req, res){
+// SHOW (get) - serves all events as json
+app.get('/show', function(req, res) {
+  Event.find({}, function(err, events) {
+    if (err) { console.log(err); }
+    else {
+      res.json(events);
+    }
+  });
+})
+
+// SHOW_PRICE_ESTIMATES (post) {latitude:, longitude: , project: }
+// - serves back JSON with two fields, estimate_price and isSponsored (true if price limit per ride set by event creator covers cost of ride for user lat/long provided) 
+app.post('/show_price_estimate', function(req, res){
   req.body.latitude = 37.378276;
   req.body.longitude = -121.917581;
+  req.body.project = {};
+  req.body.project.project_latitude = 37.378276;
+  req.body.project.project_longitude = -121.917581;
+  req.body.project.id = '556a8985beec49723fac1dac'; 
 
   var latitude = req.body.latitude;
   var longitude = req.body.longitude;
 
-  Event.find({}, function(err, events){
-     if (err) {
-      console.log("error:", err);
-    } else {
-      console.log("Successfully found all events");
-      var results = []; var isRunning = true; 
-      for (var i = 0; i < events.length; i++) {
-        var project = events[i];
-        if (latitude && project.location.longitude && longitude && project.location.longitude &&
-          project.max_sponsored_rides > project.ride_count_to_date) {
-          console.log(project); 
-          getRequest('/v1/estimates/price?start_latitude='+latitude+'&start_longitude='+longitude+'&end_latitude='+project.location.latitude+'&end_longitude='+project.location.longitude, function(err, response) {
-            if (err) { console.log('ERR!', err); }
-            else {
-              console.log('UBER res: ', response);
-              for (var j = 0; j < response.prices.length; j++) {
-                if (response.prices[j].high_estimate < project.max_per_ride) {
-                  console.log('TEST!');
-                  results.push(project); 
-                  console.log('RESULTS', results);
-                  break;
-                }
-              }
-            }
-          }); 
-        }
-      }
-      console.log('RESULTS - END', results);
-      // res.json({results: results});
-    }
-  }); 
+  var project_latitude = req.body.project.project_latitude;
+  var project_longitude = req.body.project.project_longitude;
 
+  var id = req.body.project.id; 
+
+  Event.findOne({_id: id}, function(err, project) {
+    if (err) {
+      console.log('error', err);
+    } else {
+      getRequest('/v1/estimates/price?start_latitude='+latitude+'&start_longitude='+longitude+'&end_latitude='+project_latitude+'&end_longitude='+project_longitude, function(err, response) {
+        if (err) { console.log(err); }
+        else {
+          var result = {}; 
+          var min = response.prices[0].high_estimate; 
+          for (var j = 0; j < response.prices.length; j++) {
+            if (response.prices[j].high_estimate < min) {
+              min = response.prices[j].high_estimate;
+            }
+          }
+          result.estimate_price = min; 
+          if (result.estimate_price <= project.max_per_ride) {
+            result.isSponsored = true; 
+          } else {
+            result.isSponsored = false; 
+          }
+          console.log('estimate', result.estimate_price);
+          console.log('isSponsored', result.isSponsored);
+          console.log(project);
+          console.log(result);
+          res.json(result);
+        }
+      });
+    }
+  });
 })
 
 // /profile API endpoint, includes check for authentication
