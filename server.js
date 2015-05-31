@@ -46,10 +46,11 @@ app.post('/cars', function(request, response) {
     response.json(res);
   })
 })
-// //NIKKI'S USING THIS TO VIEW HER PAGE
-// app.get('/coordinate', function(request, response){
-//   response.render('coordinate')
-// })
+
+//NIKKI'S USING THIS TO VIEW HER PAGE
+app.get('/coordinate', function(request, response){
+  response.render('coordinate')
+})
 
 // use this for an api get request without oauth
 function getRequest(endpoint, callback) {

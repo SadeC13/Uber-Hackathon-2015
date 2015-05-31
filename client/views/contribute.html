@@ -4,6 +4,9 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 	<style type="text/css">
+		body{
+			background-color: lightgrey;
+		}
 		nav{
 			margin-bottom: none;
 		}
@@ -11,10 +14,27 @@
 			color: #991F00;
 		}
 		.container{
-			border: 1px solid lightgrey;
+			border: 1px solid grey;
+		}
+		h1{
+			text-align: center;
+		}
+		label h2, h4{
+			display: inline-block;
 		}
 		.col-md-5{
-			border: 1px solid lightgrey;
+			border: 1px solid grey;
+			height: 450px;
+			font-size: 17px;
+		}
+		#coordinator{
+			position: relative;
+			left: 5%;
+			margin-right: 50px;
+		}
+		#volunteer{
+			position: relative;
+			right: -8%;
 		}
 	</style>
 </head>
@@ -33,16 +53,16 @@
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      <ul class="nav navbar-nav">
 		        	<li><a href="../views/">Home</a></li>
-		        	<li><a href="../contribute.html">Coordinate</a></li>
-		        	<li><a href="../events.html">Events</a></li>
+		        	<li><a href="../views/coordinate.html">Coordinate</a></li>
+		        	<li><a href="../views/events.html">Events</a></li>
 		    	</ul>
 		    	<ul class="nav navbar-nav navbar-right">
-		        	<li><a href="#">Login</a></li>
+		        	<li><a href="#">Connect</a></li>
 		    	</ul>
 		    </div>
 		</div>
 	</nav>
-	<div class="container">
+	<div id="main" class="container">
 		<div class="row">
 			<h1>Two Ways to Contribute</h1>
 		</div>
@@ -64,13 +84,13 @@
 								<li>Something you're passionate about</li>
 								<li>ex. beach cleanup, gardening project, fundraiser, etc.</li>
 							</ul>
-						<li><input type="checkbox">Go <a href="">here</a> to add your event</li>
+						<li><input type="checkbox">Go <a href="../views/coordinate.html">here</a> to add your event</li>
 							<ul>
 								<li>Select a date/time, give a description, and set how many people you'd like to join you!</li>
 							</ul>
 						<li><input type="checkbox">Go out and make a difference!</li>
 							<ul>
-								<li>Don't forget to check in to see how many volunteers your cause has and you're project rating (the more stars, the better!)</li>
+								<li>Don't forget to check in to see how many volunteers your cause has and your project rating (the more stars, the better!)</li>
 							</ul>
 					</ul>
 				</div>
@@ -82,7 +102,7 @@
 				</label>
 				<div class="checkbox">
 					<ul>
-						<li><input type="checkbox">Visit our <a href="">events page</a> to see the projects happening right now!</li>
+						<li><input type="checkbox">Visit our <a href="../views/events.html">events page</a> to see the projects happening right now!</li>
 							<ul>
 								<li>Browse through causes helping out your community.</li>
 							</ul>
