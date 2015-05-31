@@ -41,7 +41,10 @@ app.post('/cars', function(request, response) {
     response.json(res);
   })
 })
-
+//NIKKI'S USING THIS TO VIEW HER PAGE
+app.get('/coordinate', function(request, response){
+  response.render('coordinate')
+})
 
 // use this for an api get request without oauth
 function getRequest(endpoint, callback) {
@@ -132,7 +135,6 @@ app.get('/history', ensureAuthenticated, function (request, response) {
 		response.json(res);
 	});
 });
-
 // ride request API endpoint
 app.post('/request', ensureAuthenticated, function (request, response) {
 	// NOTE! Keep in mind that, although this link is a GET request, the actual ride request must be a POST, as shown below
