@@ -7,12 +7,38 @@
 		nav{
 			margin-bottom: none;
 		}
+		i{
+			color: #991F00;
+		}
 		.jumbotron{
 			position: relative;
 			top: -20px;
 			height: 400px;
-			background-color: #E9E9FF;
 			border-bottom: 3px solid lightgrey;
+		}
+		#logo_g{
+			position: relative;
+			left: 58%;
+			top: -397px;
+			height: 350px;
+		}
+		#logo_h{
+			position: relative;
+			left: 55%;
+			top: -554px;
+			height: 70px;
+		}
+		#title_1{
+			font-size: 100px;
+			position: relative;
+			left: 6%;
+		}
+		#title_2{
+			position: relative;
+			left: 17%;
+			top: -30px;
+			font-size: 150px;
+			color: #991F00;
 		}
 		#main{
 			position: relative;
@@ -52,13 +78,13 @@
 		        	<span class="icon-bar"></span>
 		        	<span class="icon-bar"></span>
 		    	</button>
-		    	<a class="navbar-brand" href="/">Guerrilla<i class="fa fa-heart-o"></i></a>
+		    	<a class="navbar-brand" href="../views/">Guerrilla<i class="fa fa-heart-o"></i></a>
 		    </div>
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		      <ul class="nav navbar-nav">
-		        	<li class="active"><a href="/">Home <span class="sr-only">(current)</span></a></li>
-		        	<li><a href="../contribute.html">Contribute</a></li>
-		        	<li><a href="../events.html">Events</a></li>
+		        	<li class="active"><a href="../views/">Home <span class="sr-only">(current)</span></a></li>
+		        	<li><a href="../views/coordinate.html">Coordinate</a></li>
+		        	<li><a href="../views/events.html">Events</a></li>
 		    	</ul>
 		    	<ul class="nav navbar-nav navbar-right">
 		        	<li><a href="#">Login</a></li>
@@ -68,7 +94,10 @@
 	</nav>
 	<div class="jumbotron">
 		<div class="container">
-			<p>Guerrilla</p><p>Love</p>
+			<p id="title_1">Guerrilla</p>
+			<p id="title_2">Love</p>
+			<img id="logo_g" src="../images/logo.png">
+			<img id="logo_h" src="../images/lheart.png">
 		</div>
 	</div>
 	<div id="main" class="container">
@@ -79,7 +108,7 @@
 		      		<img src="../images/question.jpg" alt="...">
 		      		<div class="caption">
 		        		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce a quam quis massa luctus dignissim. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc egestas ligula nisl...</p>
-		        		<a class="more" href="">more...</a>
+		        		<a class="more" href="../views/about.html">more...</a>
 		    		</div>
 		    	</div>
 			</div>
@@ -99,7 +128,7 @@
 		      		<img src="../images/hands.png" alt="...">
 		      		<div class="caption">
 		        		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce a quam quis massa luctus dignissim. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc egestas ligula nisl...</p>
-		        		<a class="more" href="">more...</a>
+		        		<a class="more" href="../views/contribute.html">more...</a>
 		    		</div>
 		    	</div>
 			</div>

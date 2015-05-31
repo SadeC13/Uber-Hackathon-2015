@@ -1,0 +1,164 @@
+<html>
+<head>
+	<title>Guerrilla Love | Events</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<style type="text/css">
+		nav{
+			margin-bottom: none;
+		}
+		nav i{
+			color: #991F00;
+		}
+		.jumbotron{
+			position: relative;
+			top: -20px;
+			height: 200px;
+			background-color: #E9E9FF;
+			border-bottom: 3px solid lightgrey;
+		}
+		.jumbotron i{
+			position: relative;
+			left: 20%;
+			top: -90px;
+		}
+		.btn-group{
+			position: relative;
+			left: 32%;
+		}
+		.form-group{
+			position: relative;
+			left: 82%;
+			top: -35px;
+		}
+/*		.rating{
+			position: relative;
+			left: 70%;
+			top: -123:;
+		}*/
+		#en i{
+			color: lightgreen;
+		}
+		#ed i{
+			color: lightblue;
+		}
+		#f i{
+			color: orange;
+		}
+	</style>
+</head>
+<body>
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+		    <div class="navbar-header">
+		    	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+		        	<span class="sr-only">Toggle navigation</span>
+		        	<span class="icon-bar"></span>
+		        	<span class="icon-bar"></span>
+		        	<span class="icon-bar"></span>
+		    	</button>
+		    	<a class="navbar-brand" href="../views/">Guerrilla<i class="fa fa-heart-o"></i></a>
+		    </div>
+		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		      <ul class="nav navbar-nav">
+		        	<li><a href="../views/">Home</a></li>
+		        	<li><a href="../contribute.html">Contribute</a></li>
+		        	<li class="active"><a href="../events.html">Events <span class="sr-only">(current)</span></a></li>
+		    	</ul>
+		    	<ul class="nav navbar-nav navbar-right">
+		        	<li><a href="#">Login</a></li>
+		    	</ul>
+		    </div>
+		</div>
+	</nav>
+	<div class="jumbotron">
+		<div class="container">
+			<h1>Events</h1>
+			<i class="fa fa-calendar fa-5x"></i>
+		</div>
+	</div>
+	<div class="container">
+		<div class="btn-group" role="group" aria-label="...">
+			<button type="button" class="btn btn-default">All</button>
+			<button type="button" class="btn btn-default">Education</button>
+			<button type="button" class="btn btn-default">Enviromental</button>
+			<button type="button" class="btn btn-default">Fundraising</button>
+		</div>
+		<form class='form-group'>
+			<label>
+				<select name="filter" class='form-control'>
+					<option>Filter by:</option>
+					<option>Newest</option>
+					<option>Date</option>
+					<option># of Volunteers</option>
+				</select>
+			</label>
+		</form>
+		<div class="panel panel-success">
+  			<div class="panel-heading">
+  				<div class="row">
+    			<h3 class="panel-title">Ocean Beach CleanUp</h3>
+    			<i class="fa fa-leaf fa-2x"></i>
+    			</div>
+  			</div>
+	  		<div class="panel-body">
+	  			<ul class="list-unstyled">
+	  				<li><!-- description --><p></p></li>
+	  				<li>Location:</li>
+	  				<li>Date:</li>
+	  				<li>Time:</li>
+	  				<li>Number of Volunteers:</li>
+	  				<li>Rides Available:</li>
+	  			</ul>
+	  		</div>
+	  		<div id="en" class="rating">
+	  			<i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star-o fa-3x"></i><i class="fa fa-star-o fa-3x"></i>
+	  		</div>
+  			<input class="btn btn-success" type="submit" value="Join">
+		</div>
+		
+		<div class="panel panel-info">
+  			<div class="panel-heading">
+    			<h3 class="panel-title">Family Museum Day</h3>
+    			<i class="fa fa-book fa-2x"></i>
+  			</div>
+	  		<div class="panel-body">
+	  			<ul class="list-unstyled">
+	  				<li><!-- description --><p></p></li>
+	  				<li>Location:</li>
+	  				<li>Date:</li>
+	  				<li>Time:</li>
+	  				<li>Number of Volunteers:</li>
+	  				<li>Rides Available:</li>
+	  			</ul>
+	  		</div>
+	  		<div id="ed" class="rating">
+	  			<i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star-o fa-3x"></i><i class="fa fa-star-o fa-3x"></i>
+	  		</div>
+  			<input class="btn btn-info" type="submit" value="Join">
+		</div>
+		
+		<div class="panel panel-warning">
+  			<div class="panel-heading">
+    			<h3 class="panel-title">Red Cross Nepal Relief Fundraiser</h3>
+    			<i class="fa fa-money fa-2x"></i>
+  			</div>
+	  		<div class="panel-body">
+	  			<ul class="list-unstyled">
+	  				<li><!-- description --><p></p></li>
+	  				<li>Location:</li>
+	  				<li>Date:</li>
+	  				<li>Time:</li>
+	  				<li>Number of Volunteers:</li>
+	  				<li>Rides Available:</li>
+	  			</ul>
+	  		</div>
+	  		<div id="f" class="rating">
+	  			<i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star-o fa-3x"></i><i class="fa fa-star-o fa-3x"></i>
+	  		</div>
+  			<input class="btn btn-warning" type="submit" value="Join">
+		</div>
+
+	</div>
+</body>
+</html>

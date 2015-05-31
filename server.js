@@ -6,9 +6,14 @@ var passport = require('passport');
 var uberStrategy = require('passport-uber');
 var https = require('https');
 var bodyParser = require('body-parser');
+var geocoder = require('node-geocoder')('google', 'http');
 var app = express();
 var config = require('./config/config.js');
 require('./config/mongoose.js'); 
+var mongoose = require('mongoose');
+var Token = mongoose.model('Token');
+var User = mongoose.model('User')
+var Event = mongoose.model('Event');
 // Get all auth stuff from config file
 // ClientID & ClientSecret for API requests with OAUTH
 var clientID = config.ClientID;
@@ -53,17 +58,25 @@ function getRequest(endpoint, callback) {
     path: endpoint,
     method: "GET",
     headers: {
+      'Content-Type': 'application/json',
       Authorization: "Token " + ServerID
     }
   }
   var req = https.request(options, function(res) {
-    res.on('data', function(data) {
-      console.log('data!');
-      console.log(JSON.parse(data));
-      callback(null, JSON.parse(data));
-    })
-  })
+    var fullRes = '';
+    res.setEncoding('utf8');
+    res.on('readable', function() {
+      var chunk = this.read() || '';
+      fullRes += chunk;
+      console.log('chunk: ' + Buffer.byteLength(chunk) + ' bytes');
+    });
+    res.on('end', function() {
+      callback(null, JSON.parse(fullRes));
+    });
+
+  });
   req.end();
+
   req.on('error', function(err) {
     callback(err, null);
   });
@@ -72,6 +85,7 @@ function getRequest(endpoint, callback) {
 // _______________ BEGIN PASSPORT STUFF ________________
 // Serialize and deserialize users used by passport
 passport.serializeUser(function (user, done){
+  console.log('SerializeUser', user); 
 	done(null, user);
 });
 passport.deserializeUser(function (user, done){
@@ -88,53 +102,223 @@ passport.use(new uberStrategy({
 		console.log('user:', user.first_name, user.last_name);
 		console.log('access token:', accessToken);
 		console.log('refresh token:', refreshToken);
-    // THIS IS WHERE YOU WOULD PUT SOME DB LOGIC TO SAVE THE USER
+
+    // SAVE TOKEN TO DB
+    var token = new Token ({
+      token: accessToken, 
+      total_spent: 0, 
+      no_rides: 0
+    }); 
+    token.save(function(err, token) {
+      if (err) {
+        console.log('Failed to add token to db', err);
+      } else {
+        console.log('Successfully added token to db.');
+
+        // SAVE USER TO DB - ASSOCIATE TOKEN 
+        var person = new User({
+          name: user.first_name + ' ' + user.last_name,
+          email: user.email,
+          no_people: 1, 
+          token: token._id
+        }); 
+        person.save(function(err, user) {
+          if (err) {
+            console.log('Failed to add user to db', err);
+          } else {
+            console.log('Successfully added user to db.');
+          }
+        }); 
+      }
+    });
+    console.log('USER', user);
 		user.accessToken = accessToken;
 		return done(null, user);
 	}
 ));
+
+// backend test page
+app.get('/backend', function(request, response) {
+  response.render('backend_test');
+});
+
+// home page
+app.get('/', function (request, response) {
+  response.render('index');
+});
+
 
 // login page 
 app.get('/login', function (request, response) {
 	response.render('login');
 });
 
-// get request to start the whole oauth process with passport
+// AUTH (get) request to start the whole oauth process with passport
 app.get('/auth/uber',
 	passport.authenticate('uber',
 		{ scope: ['profile', 'history', 'history_lite', 'request', 'request_receipt'] }
 	)
 );
 
-// authentication callback redirects to /login if authentication failed or home if successful
+// AUTH_CALLBACK (get) redirects - failed to /login, success to /coordinate
 app.get('/auth/uber/callback',
 	passport.authenticate('uber', {
-		failureRedirect: '/login'
+		failureRedirect: '/backend'
 	}), function(req, res) {
-    res.redirect('/');
+    res.redirect('/coordinate');
+});
+
+// COORDINATE (get) - sends json with user email which MUST be included in event form 
+app.get('/coordinate', ensureAuthenticated, function(request, response) {
+  response.render('backend');
+  // response.json({email: request.user.email}); 
+});
+
+// create an event
+app.post('/create_event', ensureAuthenticated, function(request, response) {
+  console.log('*********************CREATE_EVENT*************************'); 
+  request.body = {
+    title: 'Guerilla Gardening',
+    location: '1980 Zanker Rd San Jose, CA 95112',
+    start_time: new Date('Sat May 30 2015 17:26:58 GMT-0700 (PDT)'),
+    end_time: new Date('Sat Jun 1 2015 17:26:58 GMT-0700 (PDT)'),
+    community_impact_rating: 4,
+    spend_limit: 200,    
+    max_sponsored_rides: 7,
+    max_per_ride: 25,
+    image_url: 'http://upload.wikimedia.org/wikipedia/commons/2/2b/Flower_garden,_Botanic_Gardens,_Churchtown_2.JPG',
+    category: 'environment',
+    add_user_to_volunteers: 1,
+    user_address_lat: 37.3768183,
+    user_address_long: -121.912378    
+  }
+
+  var latitude;
+  var longitude;
+  geocoder.geocode(request.body.location, function(err, res) {
+    // console.log('coordinates: ', res);
+    latitude = res[0].latitude;
+    longitude = res[0].longitude;
+
+    var project = new Event({
+      title: request.body.title,
+      location: {
+        address: request.body.location,
+        latitude: latitude,
+        longitude: longitude
+      },
+      start_time: request.body.start_time,
+      end_time: request.body.end_time,
+      community_impact_rating: request.body.community_impact_rating,
+      spend_limit: request.body.spend_limit,
+      total_spent: 0,
+      max_sponsored_rides: request.body.max_sponsored_rides,
+      max_per_ride: request.body.max_per_ride,
+      ride_count_to_date: 0,
+      image_url: request.body.image_url,
+      category: request.body.category
+    });
+    // Add user as volunteer to event 
+    if (request.body.add_user_to_volunteers) {
+      var user = User.findOne({email: request.user.email}, function(err, user) {
+        project.volunteers.push(user._id);
+
+         // Save new event in DB
+        project.save(function(err, result) {
+          if (err) {
+            console.log("Failed to save event!");
+          } else {
+            console.log("Successfully saved event!");
+            console.log("Saved event:", result);
+
+            // Update users events
+            user.events.push(result);
+          }
+        }); 
+      });
+    } else {
+       project.save(function(err, result) {
+          if (err) {
+            console.log("Failed to save event!");
+          } else {
+            console.log("Successfully saved event!");
+            console.log("Saved event:", result);
+          }
+        });
+    }
   });
 
-// home after the user is authenticated
-app.get('/', ensureAuthenticated, function (request, response) {
-	response.render('index');
-});
+  // Update user's address
+  User.update({email: request.user.email}, {latitude: request.body.user_address_lat, longitude: request.body.user_address_long}, function(err, user) {
+      if (err) { console.log(err); }
+      else {
+        console.log('Successfully updated user', user);
+      }
+  });
+  
+}); 
 
-// /profile API endpoint
+app.post('/show_events', function(req, res){
+  req.body.latitude = 37.378276;
+  req.body.longitude = -121.917581;
+
+  var latitude = req.body.latitude;
+  var longitude = req.body.longitude;
+
+  Event.find({}, function(err, events){
+     if (err) {
+      console.log("error:", err);
+    } else {
+      console.log("Successfully found all events");
+      var results = []; var isRunning = true; 
+      for (var i = 0; i < events.length; i++) {
+        var project = events[i];
+        if (latitude && project.location.longitude && longitude && project.location.longitude &&
+          project.max_sponsored_rides > project.ride_count_to_date) {
+          console.log(project); 
+          getRequest('/v1/estimates/price?start_latitude='+latitude+'&start_longitude='+longitude+'&end_latitude='+project.location.latitude+'&end_longitude='+project.location.longitude, function(err, response) {
+            if (err) { console.log('ERR!', err); }
+            else {
+              console.log('UBER res: ', response);
+              for (var j = 0; j < response.prices.length; j++) {
+                if (response.prices[j].high_estimate < project.max_per_ride) {
+                  console.log('TEST!');
+                  results.push(project); 
+                  console.log('RESULTS', results);
+                  break;
+                }
+              }
+            }
+          }); 
+        }
+      }
+      console.log('RESULTS - END', results);
+      // res.json({results: results});
+    }
+  }); 
+
+})
+
+// /profile API endpoint, includes check for authentication
 app.get('/profile', ensureAuthenticated, function (request, response) {
+  console.log(request.user.accessToken);
 	getAuthorizedRequest('/v1/me', request.user.accessToken, function (error, res) {
-		if (error) { console.log(error); }
-		response.json(res);
+		if (error) { console.log('ERR', error); }
+    // ADD USER PROFILE TO DB
+    console.log(res);
+		res.redirect('/coordinate');
 	});
 });
 
-// /history API endpoint
-app.get('/history', ensureAuthenticated, function (request, response) {
-	getAuthorizedRequest('/v1.2/history', request.user.accessToken, function (error, res) {
-		if (error) { console.log("err", error); }
-    console.log(res);
-		response.json(res);
-	});
-});
+// // /history API endpoint
+// app.get('/history', ensureAuthenticated, function (request, response) {
+// 	getAuthorizedRequest('/v1.2/history', request.user.accessToken, function (error, res) {
+// 		if (error) { console.log("err", error); }
+//     console.log(res);
+// 		response.json(res);
+// 	});
+// });
+
 // ride request API endpoint
 app.post('/request', ensureAuthenticated, function (request, response) {
 	// NOTE! Keep in mind that, although this link is a GET request, the actual ride request must be a POST, as shown below
@@ -166,6 +350,7 @@ function ensureAuthenticated (request, response, next) {
 	}
 	response.redirect('/login');
 }
+
 // use this for an api get request
 function getAuthorizedRequest(endpoint, accessToken, callback) {
   var options = {
@@ -188,6 +373,7 @@ function getAuthorizedRequest(endpoint, accessToken, callback) {
     callback(err, null);
   });
 }
+
 // use this for an api post request
 function postAuthorizedRequest(endpoint, accessToken, parameters, callback) {
   var options = {

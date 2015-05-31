@@ -6,9 +6,11 @@ var userSchema = new mongoose.Schema({
 	phone: String, 
 	email: String,
 	no_people: Number,
-	address: String, 
+	latitude: Number,
+	longitude: Number,
 	events: [{type: Schema.Types.ObjectId, ref: 'Event'}],
-	created_at: { type: Date, default: Date.now }
+	created_at: { type: Date, default: Date.now },
+	token: {type: Schema.Types.ObjectId, ref: 'Token'}
 }); 
 
 mongoose.model('User', userSchema);
