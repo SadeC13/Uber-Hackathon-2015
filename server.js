@@ -126,10 +126,10 @@ passport.use(new uberStrategy({
 
 
 
-// backend test page
-app.get('/backend', function(request, response) {
-  response.render('backend_test');
-});
+// // backend test page
+// app.get('/backend', function(request, response) {
+//   response.render('backend_test');
+// });
 
 // home page
 app.get('/', function (request, response) {
@@ -465,7 +465,7 @@ function ensureAuthenticated (request, response, next) {
 	if (request.isAuthenticated()) {
 		return next();
 	}
-	response.redirect('/login');
+	response.json({err: 'failed to authenticate.'});
 }
 
 // use this for an api get request

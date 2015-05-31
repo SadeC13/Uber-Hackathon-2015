@@ -3,13 +3,12 @@ var myApp=angular.module('myApp', ['ngRoute']);
 //.config is kind of like a local routes controller
 myApp.config(function ($routeProvider){
 	$routeProvider
-		.when('/coordinate', {templateUrl:'partials/coordinate.html'})
 		.when('/contribute', {templateUrl:'views/contribute.html'})
 		.when('/about', {templateUrl:'views/about.html'})
 		.when('/events', {templateUrl:'views/events.html'})
 		.when('/mission', {templateUrl:'views/mission.html'})
 		// .when('/login', {templateUrl:'views/login.html'})
-
+		.when('/contribute', {templateUrl:'partials/contribute.html'})
 		.otherwise({redirectTo:'/'});
 });
 $(function() {
