@@ -46,6 +46,7 @@ app.post('/cars', function(request, response) {
     response.json(res);
   })
 })
+
 //NIKKI'S USING THIS TO VIEW HER PAGE
 app.get('/coordinate', function(request, response){
   response.render('coordinate')
@@ -76,7 +77,6 @@ function getRequest(endpoint, callback) {
 
   });
   req.end();
-
   req.on('error', function(err) {
     callback(err, null);
   });
@@ -176,7 +176,6 @@ app.get('/coordinate', ensureAuthenticated, function(request, response) {
 
 // create an event
 app.post('/create_event', ensureAuthenticated, function(request, response) {
-  console.log('*********************CREATE_EVENT*************************'); 
   request.body = {
     title: 'Guerilla Gardening',
     location: '1980 Zanker Rd San Jose, CA 95112',
@@ -217,7 +216,8 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
       ride_count_to_date: 0,
       image_url: request.body.image_url,
       category: request.body.category
-    });
+    }); 
+
     // Add user as volunteer to event 
     if (request.body.add_user_to_volunteers) {
       var user = User.findOne({email: request.user.email}, function(err, user) {
@@ -233,6 +233,24 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
 
             // Update users events
             user.events.push(result);
+
+            // Add token to DB
+            console.log('ACCESS TOKEN', request.user.accessToken);
+            var token = new Token({token: request.user.accessToken}); 
+            token._event = result._id; 
+            token.save(function(err, token) {
+              if (err) { console.log(err); }
+              else {
+                console.log('Successfully saved token!');
+                project._token = token._id;
+                project.save(function(err, e) {
+                  if (err) { console.log(err); }
+                  else { console.log('Successfully added token association to project!', project); }
+                }); 
+              }
+            });
+            // Add token association to project
+
           }
         }); 
       });
@@ -243,9 +261,26 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
           } else {
             console.log("Successfully saved event!");
             console.log("Saved event:", result);
+
+            console.log('ACCESS TOKEN', request.user.accessToken);
+            var token = new Token({token: request.user.accessToken}); 
+            token._event = result._id; 
+            token.save(function(err, token) {
+              if (err) { console.log(err); }
+              else {
+                console.log('Successfully saved token!');
+                project._token = token._id;
+                project.save(function(err, e) {
+                  if (err) { console.log(err); }
+                  else { console.log('Successfully added token association to project!', project); }
+                }); 
+              }
+            });
           }
         });
     }
+
+
   });
 
   // Update user's address
@@ -258,57 +293,120 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
   
 }); 
 
-app.post('/show_events', function(req, res){
+// SHOW (get) - serves all events as json
+app.get('/show', function(req, res) {
+  Event.find({}).populate('volunteers').sort({created_at: -1}).exec(function(err, events) {
+    if (err) { console.log(err); }
+    else {
+      res.json(events);
+    }
+  });
+})
+
+// SHOW_PRICE_ESTIMATES (post) {latitude:, longitude: , project: }
+// - serves back JSON with two fields, estimate_price and isSponsored (true if price limit per ride set by event creator covers cost of ride for user lat/long provided) 
+app.post('/show_price_estimate', function(req, res){
   req.body.latitude = 37.378276;
   req.body.longitude = -121.917581;
+  req.body.project = {};
+  req.body.project.project_latitude = 37.378276;
+  req.body.project.project_longitude = -121.917581;
+  req.body.project.id = '556a8985beec49723fac1dac'; 
 
   var latitude = req.body.latitude;
   var longitude = req.body.longitude;
 
-  Event.find({}, function(err, events){
-     if (err) {
-      console.log("error:", err);
-    } else {
-      console.log("Successfully found all events");
-      var results = []; var isRunning = true; 
-      for (var i = 0; i < events.length; i++) {
-        var project = events[i];
-        if (latitude && project.location.longitude && longitude && project.location.longitude &&
-          project.max_sponsored_rides > project.ride_count_to_date) {
-          console.log(project); 
-          getRequest('/v1/estimates/price?start_latitude='+latitude+'&start_longitude='+longitude+'&end_latitude='+project.location.latitude+'&end_longitude='+project.location.longitude, function(err, response) {
-            if (err) { console.log('ERR!', err); }
-            else {
-              console.log('UBER res: ', response);
-              for (var j = 0; j < response.prices.length; j++) {
-                if (response.prices[j].high_estimate < project.max_per_ride) {
-                  console.log('TEST!');
-                  results.push(project); 
-                  console.log('RESULTS', results);
-                  break;
-                }
-              }
-            }
-          }); 
-        }
-      }
-      console.log('RESULTS - END', results);
-      // res.json({results: results});
-    }
-  }); 
+  var project_latitude = req.body.project.project_latitude;
+  var project_longitude = req.body.project.project_longitude;
 
+  var id = req.body.project.id; 
+
+  Event.findOne({_id: id}, function(err, project) {
+    if (err) {
+      console.log('error', err);
+    } else {
+      getRequest('/v1/estimates/price?start_latitude='+latitude+'&start_longitude='+longitude+'&end_latitude='+project_latitude+'&end_longitude='+project_longitude, function(err, response) {
+        if (err) { console.log(err); }
+        else {
+          var result = {}; 
+          var min = response.prices[0].high_estimate; 
+          for (var j = 0; j < response.prices.length; j++) {
+            if (response.prices[j].product_id == "a1111c8c-c720-46c3-8534-2fcdd730040d") {
+              result.estimate_price = response.prices[j].high_estimate;
+            }
+            if (response.prices[j].high_estimate < min) { 
+              min = response.prices[j].high_estimate;
+            }
+          }
+          if (!result.estimate_price) result.estimate_price = min; 
+          if (result.estimate_price <= project.max_per_ride) {
+            result.isSponsored = true; 
+          } else {
+            result.isSponsored = false; 
+          }
+          console.log('estimate', result.estimate_price);
+          console.log('isSponsored', result.isSponsored);
+          console.log(project);
+          console.log(result);
+          res.json(result);
+        }
+      });
+    }
+  });
 })
 
-// /profile API endpoint, includes check for authentication
-app.get('/profile', ensureAuthenticated, function (request, response) {
-  console.log(request.user.accessToken);
-	getAuthorizedRequest('/v1/me', request.user.accessToken, function (error, res) {
-		if (error) { console.log('ERR', error); }
-    // ADD USER PROFILE TO DB
-    console.log(res);
-		res.redirect('/coordinate');
-	});
-});
+// JOIN (post) - {volunteer: {name:, phone:, email:, latitude:, longitude:, }, _project: }
+// (note: currently does not check for conflicting events and stores a unique instance of the user every time!)
+// - adds user to DB, updates user events, updates event
+app.post('/join', function(req, response) {
+  req.body = {
+    volunteer: {
+      name: 'Alison Rugar', 
+      phone: '408-628-2220',
+      email: 'ali@gmail.com',
+      no_people: 2,
+      latitude: 37.3768183,
+      longitude: -121.912378
+    },
+    _project: '556a8985beec49723fac1dac'
+  }
+
+  var user = new User(req.body.volunteer); 
+  user.events.push(req.body._project);
+
+  user.save(function(err, res) {
+    if (err) { console.log(err); } 
+    else {
+      console.log('Successfully added user!', user);
+    }
+  });
+
+  Event.findOne({_id: req.body._project}, function(err, project) {
+    if (err) { console.log(err); }
+    else {
+      project.volunteers.push(user); 
+      project.save(function(error, result) {
+        if (err) { console.log(err); }
+        else { console.log('Successfully added user to event!'); }
+      }); 
+      Event.findOne({_id: req.body._project}).populate('volunteers').exec(function(err, project) {
+        if (err) { console.log(err); }
+        else { response.json(project); }
+      }); 
+    }
+  });
+})
+
+// // /profile API endpoint, includes check for authentication
+// app.get('/profile', ensureAuthenticated, function (request, response) {
+//   console.log(request.user.accessToken);
+// 	getAuthorizedRequest('/v1/me', request.user.accessToken, function (error, res) {
+// 		if (error) { console.log('ERR', error); }
+//     // ADD USER PROFILE TO DB
+//     console.log(res);
+// 		res.redirect('/coordinate');
+// 	});
+// });
 
 // // /history API endpoint
 // app.get('/history', ensureAuthenticated, function (request, response) {
@@ -319,28 +417,60 @@ app.get('/profile', ensureAuthenticated, function (request, response) {
 // 	});
 // });
 
-// ride request API endpoint
-app.post('/request', ensureAuthenticated, function (request, response) {
-	// NOTE! Keep in mind that, although this link is a GET request, the actual ride request must be a POST, as shown below
-	var parameters = {
-		start_latitude : request.body.start_latitude,
-		start_longitude: request.body.start_longitude,
-		end_latitude: request.body.end_latitude,
-		end_longitude: request.body.end_longitude,
-		product_id: "a1111c8c-c720-46c3-8534-2fcdd730040d"
-	};
+// REQUEST (post) {_project, user_latitude, user_longitude} 
+// - ride request API endpoint
+app.post('/request', function (req, response) {
+  req.body = {
+    _project: '556b2d7e604539e87b161be4',
+    user_latitude: 37.3768188,
+    user_longitude: -121.912378
+  }
 
-	postAuthorizedRequest('/v1/requests', request.user.accessToken, parameters, function (error, res) {
-		if (error) { console.log(error); }
-		response.json(res);
-	});
+  var project_id = req.body._project; 
+  var user_latitude = req.body.user_latitude;
+  var user_longitude = req.body.user_longitude; 
+
+	Event.findOne({_id: req.body._project}).populate('_token').exec(function(err, project) {
+    if (err) { console.log(err); }
+    else {
+      var parameters = {
+        start_latitude: user_latitude,
+        start_longitude: user_longitude,
+        end_latitude: project.location.latitude,
+        end_longitude: project.location.longitude,
+        product_id: "a1111c8c-c720-46c3-8534-2fcdd730040d"
+      }
+      console.log('PROJECT TOKEN', project._token.token);
+      //console.log(project);
+      postAuthorizedRequest('/v1/requests', project._token.token, parameters, function(error, res) {
+        if (error) { console.log(error); }
+        else { 
+          response.json(res);
+        }
+      });
+    }
+  }); 
+
+
+	// var parameters = {
+	// 	start_latitude : request.body.start_latitude,
+	// 	start_longitude: request.body.start_longitude,
+	// 	end_latitude: request.body.end_latitude,
+	// 	end_longitude: request.body.end_longitude,
+	// 	product_id: "a1111c8c-c720-46c3-8534-2fcdd730040d"
+	// };
+
+	// postAuthorizedRequest('/v1/requests', request.user.accessToken, parameters, function (error, res) {
+	// 	if (error) { console.log(error); }
+	// 	response.json(res);
+	// });
 });
 
-// logout
-app.get('/logout', function (request, response) {
-	request.logout();
-	response.redirect('/login');
-});
+// // logout
+// app.get('/logout', function (request, response) {
+// 	request.logout();
+// 	response.redirect('/login');
+// });
 
 // route middleware to make sure the request is from an authenticated user
 function ensureAuthenticated (request, response, next) {
