@@ -401,7 +401,7 @@ app.post('/join', function(req, response) {
           }); 
           Event.findOne({_id: req.body._project}).populate('volunteers').exec(function(err, e) {
             if (err) { console.log(err); }
-            else { response.sendFile(path.join(__dirname,'./client/views/index.html')); }
+            else { response.redirect('/show/'+e._id); }; 
           }); 
         }
       });
@@ -409,6 +409,12 @@ app.post('/join', function(req, response) {
   }); 
 
 }); 
+
+app.get('/show/:id', function(request, response) {
+  Event.findOne({_id: request.params.id}).populate('volunteers').exec( function(err, project) {
+    response.render('success', {project: project}); 
+  }); 
+})
 
 // // /profile API endpoint, includes check for authentication
 // app.get('/profile', ensureAuthenticated, function (request, response) {
