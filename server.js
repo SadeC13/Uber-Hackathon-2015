@@ -158,7 +158,7 @@ app.get('/auth/uber/callback',
 
 // COORDINATE (get) - sends json with user email which MUST be included in event form 
 app.get('/coordinate', ensureAuthenticated, function(request, response) {
-  response.render('backend');
+  response.sendFile(path.join(__dirname, './client/views/coordinate.html'));
   // response.json({email: request.user.email}); 
 });
 

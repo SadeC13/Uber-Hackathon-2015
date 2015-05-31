@@ -14,6 +14,7 @@
 			height: 200px;
 			background-color: #E9E9FF;
 			border-bottom: 3px solid lightgrey;
+			text-align: center;
 		}
 		.jumbotron h1, i{
 			display: inline-block;
@@ -45,32 +46,14 @@
 		#f i{
 			color: orange;
 		}
+		.join{
+			position: relative;
+			left: 88%;
+			top: -21px;
+		}
 	</style>
 </head>
 <body>
-	<nav class="navbar navbar-default">
-		<div class="container-fluid">
-		    <div class="navbar-header">
-		    	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-		        	<span class="sr-only">Toggle navigation</span>
-		        	<span class="icon-bar"></span>
-		        	<span class="icon-bar"></span>
-		        	<span class="icon-bar"></span>
-		    	</button>
-		    	<a class="navbar-brand" href="../views/">Guerrilla<i class="fa fa-heart-o"></i></a>
-		    </div>
-		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		      <ul class="nav navbar-nav">
-		        	<li><a href="../views/">Home</a></li>
-		        	<li><a href="../contribute.html">Contribute</a></li>
-		        	<li class="active"><a href="../events.html">Events <span class="sr-only">(current)</span></a></li>
-		    	</ul>
-		    	<ul class="nav navbar-nav navbar-right">
-		        	<li><a href="#">Connect</a></li>
-		    	</ul>
-		    </div>
-		</div>
-	</nav>
 	<div class="jumbotron">
 		<div class="container">
 			<h1>Events</h1>
@@ -102,7 +85,7 @@
     			</div>
   			</div>
 	  		<div class="panel-body">
-	  			<ul class="list-unstyled">
+	  			<ul class="list-unstyled col-md-5">
 	  				<li><!-- description --><p></p></li>
 	  				<li>Location:</li>
 	  				<li>Date:</li>
@@ -111,10 +94,10 @@
 	  				<li>Rides Available:</li>
 	  			</ul>
 	  		</div>
-	  		<div id="en" class="rating">
+<!-- 	  		<div id="en" class="rating">
 	  			<i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star-o fa-3x"></i><i class="fa fa-star-o fa-3x"></i>
-	  		</div>
-  			<input class="btn btn-success" type="submit" value="Join">
+	  		</div> -->
+  			<input class="join btn btn-success" type="submit" value="Join">
 		</div>
 		
 		<div class="panel panel-info">
@@ -124,7 +107,7 @@
   			</div>
 	  		<div class="panel-body">
 	  			<ul class="list-unstyled">
-	  				<li><!-- description --><p></p></li>
+	  				<li><!-- description --></li>
 	  				<li>Location:</li>
 	  				<li>Date:</li>
 	  				<li>Time:</li>
@@ -132,10 +115,10 @@
 	  				<li>Rides Available:</li>
 	  			</ul>
 	  		</div>
-	  		<div id="ed" class="rating">
+<!-- 	  		<div id="ed" class="rating">
 	  			<i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star-o fa-3x"></i><i class="fa fa-star-o fa-3x"></i>
-	  		</div>
-  			<input class="btn btn-info" type="submit" value="Join">
+	  		</div> -->
+  			<input class="join btn btn-info" type="submit" value="Join">
 		</div>
 		
 		<div class="panel panel-warning">
@@ -153,10 +136,10 @@
 	  				<li>Rides Available:</li>
 	  			</ul>
 	  		</div>
-	  		<div id="f" class="rating">
+<!-- 	  		<div id="f" class="rating">
 	  			<i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star fa-3x"></i><i class="fa fa-star-o fa-3x"></i><i class="fa fa-star-o fa-3x"></i>
-	  		</div>
-  			<input class="btn btn-warning" type="submit" value="Join">
+	  		</div> -->
+  			<input class="join btn btn-warning" type="submit" value="Join">
 		</div>
 	</div>
 </body>

@@ -4,10 +4,12 @@ var myApp=angular.module('myApp', ['ngRoute']);
 myApp.config(function ($routeProvider){
 	$routeProvider
 		.when('/contribute', {templateUrl:'views/contribute.html'})
+		.when('/', {templateUrl: 'views/landing.html'})
 		.when('/about', {templateUrl:'views/about.html'})
 		.when('/events', {templateUrl:'views/events.html'})
-		.when('/mission', {templateUrl:'views/mission.html'})s
-		.when('/coordinate', {templateUrl:'partials/coordinate.html'})
+		.when('/mission', {templateUrl:'views/mission.html'})
+		.when('/login', {templateUrl:'views/login.html'})
+
 		.otherwise({redirectTo:'/'});
 });
 $(function() {
