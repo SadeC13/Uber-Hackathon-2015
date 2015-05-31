@@ -5,6 +5,7 @@ var session = require('express-session');
 var passport = require('passport');
 var uberStrategy = require('passport-uber');
 var https = require('https');
+var path = require('path');
 var bodyParser = require('body-parser');
 var geocoder = require('node-geocoder')('google', 'http');
 var app = express();
@@ -33,24 +34,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(__dirname + '/client'));
-app.set('views', __dirname + '/client/views');
-// remove? not using ejs or views 
-app.set('view engine','ejs');
-// bodyparser for handling post data
+//app.set('views', __dirname + '/client/views');
+//app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-
-// post to show unauthorized request
-app.post('/cars', function(request, response) {
-  getRequest('/v1/products?latitude='+request.body.start_latitude+'&longitude='+request.body.start_longitude, function(err, res) {
-    response.json(res);
-  })
-})
-
-//NIKKI'S USING THIS TO VIEW HER PAGE
-app.get('/coordinate', function(request, response){
-  response.render('coordinate')
-})
 
 // use this for an api get request without oauth
 function getRequest(endpoint, callback) {
@@ -82,7 +69,7 @@ function getRequest(endpoint, callback) {
   });
 }
 
-// _______________ BEGIN PASSPORT STUFF ________________
+// _____________________________ PASSPORT ______________________________
 // Serialize and deserialize users used by passport
 passport.serializeUser(function (user, done){
   console.log('SerializeUser', user); 
@@ -137,6 +124,8 @@ passport.use(new uberStrategy({
 	}
 ));
 
+
+
 // backend test page
 app.get('/backend', function(request, response) {
   response.render('backend_test');
@@ -144,9 +133,8 @@ app.get('/backend', function(request, response) {
 
 // home page
 app.get('/', function (request, response) {
-  response.render('index');
+  response.sendFile(path.join(__dirname,'./client/views/index.html'));
 });
-
 
 // login page 
 app.get('/login', function (request, response) {
