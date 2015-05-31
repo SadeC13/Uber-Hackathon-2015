@@ -364,6 +364,10 @@ app.get('/join/:id', function(request, response) {
 // (note: currently does not check for conflicting events and stores a unique instance of the user every time!)
 // - adds user to DB, updates user events, updates event
 app.post('/join', function(req, response) {
+  req.body.no_people = parseInt(req.body.no_people);
+  req.body.latitude = parseInt(req.body.latitude);
+  req.body.longitude = parseInt(req.body.longitude);
+  console.log(req.body);
   // req.body = {
   //   name: 'Alison Rugar', 
   //   phone: '408-628-2220',
@@ -377,7 +381,7 @@ app.post('/join', function(req, response) {
   User.findOne({email: req.body.email}, function(err, result) {
     if (err) { console.log(err); }
     else {
-      if (!result) { var user = new User(req.body.volunteer); } 
+      if (!result) { var user = new User(req.body); } 
       else { user = result; }
       user.events.push(req.body._project);
       user.save(function(err, res) {
@@ -397,7 +401,7 @@ app.post('/join', function(req, response) {
           }); 
           Event.findOne({_id: req.body._project}).populate('volunteers').exec(function(err, e) {
             if (err) { console.log(err); }
-            else { response.json(e); }
+            else { response.sendFile(path.join(__dirname,'./client/views/index.html')); }
           }); 
         }
       });
