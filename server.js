@@ -5,6 +5,7 @@ var session = require('express-session');
 var passport = require('passport');
 var uberStrategy = require('passport-uber');
 var https = require('https');
+var path = require('path');
 var bodyParser = require('body-parser');
 var geocoder = require('node-geocoder')('google', 'http');
 var app = express();
@@ -33,24 +34,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(__dirname + '/client'));
-app.set('views', __dirname + '/client/views');
-// remove? not using ejs or views 
-app.set('view engine','ejs');
-// bodyparser for handling post data
+//app.set('views', __dirname + '/client/views');
+//app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-
-// post to show unauthorized request
-app.post('/cars', function(request, response) {
-  getRequest('/v1/products?latitude='+request.body.start_latitude+'&longitude='+request.body.start_longitude, function(err, res) {
-    response.json(res);
-  })
-})
-
-//NIKKI'S USING THIS TO VIEW HER PAGE
-app.get('/coordinate', function(request, response){
-  response.render('coordinate')
-})
 
 // use this for an api get request without oauth
 function getRequest(endpoint, callback) {
@@ -82,7 +69,7 @@ function getRequest(endpoint, callback) {
   });
 }
 
-// _______________ BEGIN PASSPORT STUFF ________________
+// _____________________________ PASSPORT ______________________________
 // Serialize and deserialize users used by passport
 passport.serializeUser(function (user, done){
   console.log('SerializeUser', user); 
@@ -137,6 +124,8 @@ passport.use(new uberStrategy({
 	}
 ));
 
+
+
 // backend test page
 app.get('/backend', function(request, response) {
   response.render('backend_test');
@@ -144,9 +133,8 @@ app.get('/backend', function(request, response) {
 
 // home page
 app.get('/', function (request, response) {
-  response.render('index');
+  response.sendFile(path.join(__dirname,'./client/views/index.html'));
 });
-
 
 // login page 
 app.get('/login', function (request, response) {
@@ -233,6 +221,7 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
 
             // Update users events
             user.events.push(result);
+            user.save();
 
             // Add token to DB
             console.log('ACCESS TOKEN', request.user.accessToken);
@@ -242,15 +231,17 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
               if (err) { console.log(err); }
               else {
                 console.log('Successfully saved token!');
+                // Add token association to project
                 project._token = token._id;
                 project.save(function(err, e) {
                   if (err) { console.log(err); }
-                  else { console.log('Successfully added token association to project!', project); }
+                  else { 
+                    console.log('Successfully added token association to project!', project);
+                    response.json(e);
+                  }
                 }); 
               }
             });
-            // Add token association to project
-
           }
         }); 
       });
@@ -269,10 +260,14 @@ app.post('/create_event', ensureAuthenticated, function(request, response) {
               if (err) { console.log(err); }
               else {
                 console.log('Successfully saved token!');
+                // Add token association to project
                 project._token = token._id;
                 project.save(function(err, e) {
                   if (err) { console.log(err); }
-                  else { console.log('Successfully added token association to project!', project); }
+                  else { 
+                    console.log('Successfully added token association to project!', project); 
+                    response.json(e);
+                  }
                 }); 
               }
             });
@@ -311,7 +306,7 @@ app.post('/show_price_estimate', function(req, res){
   req.body.project = {};
   req.body.project.project_latitude = 37.378276;
   req.body.project.project_longitude = -121.917581;
-  req.body.project.id = '556a8985beec49723fac1dac'; 
+  req.body.project.id = '556b3779a47074658166c2ae'; 
 
   var latitude = req.body.latitude;
   var longitude = req.body.longitude;
@@ -368,34 +363,40 @@ app.post('/join', function(req, response) {
       latitude: 37.3768183,
       longitude: -121.912378
     },
-    _project: '556a8985beec49723fac1dac'
+    _project: '556b3779a47074658166c2ae'
   }
 
-  var user = new User(req.body.volunteer); 
-  user.events.push(req.body._project);
-
-  user.save(function(err, res) {
-    if (err) { console.log(err); } 
-    else {
-      console.log('Successfully added user!', user);
-    }
-  });
-
-  Event.findOne({_id: req.body._project}, function(err, project) {
+  User.findOne({email: req.body.email}, function(err, result) {
     if (err) { console.log(err); }
     else {
-      project.volunteers.push(user); 
-      project.save(function(error, result) {
+      if (!result) { var user = new User(req.body.volunteer); } 
+      else { user = result; }
+      user.events.push(req.body._project);
+      user.save(function(err, res) {
+        if (err) { console.log(err); } 
+        else {
+          console.log('Successfully added user!', user);
+        }
+      });
+
+      Event.findOne({_id: req.body._project}, function(err, project) {
         if (err) { console.log(err); }
-        else { console.log('Successfully added user to event!'); }
-      }); 
-      Event.findOne({_id: req.body._project}).populate('volunteers').exec(function(err, project) {
-        if (err) { console.log(err); }
-        else { response.json(project); }
-      }); 
+        else {
+          project.volunteers.push(user); 
+          project.save(function(error, result) {
+            if (err) { console.log(err); }
+            else { console.log('Successfully added user to event!'); }
+          }); 
+          Event.findOne({_id: req.body._project}).populate('volunteers').exec(function(err, e) {
+            if (err) { console.log(err); }
+            else { response.json(e); }
+          }); 
+        }
+      });
     }
-  });
-})
+  }); 
+
+}); 
 
 // // /profile API endpoint, includes check for authentication
 // app.get('/profile', ensureAuthenticated, function (request, response) {
@@ -421,7 +422,7 @@ app.post('/join', function(req, response) {
 // - ride request API endpoint
 app.post('/request', function (req, response) {
   req.body = {
-    _project: '556b2d7e604539e87b161be4',
+    _project: '556b3779a47074658166c2ae',
     user_latitude: 37.3768188,
     user_longitude: -121.912378
   }
@@ -450,27 +451,13 @@ app.post('/request', function (req, response) {
       });
     }
   }); 
-
-
-	// var parameters = {
-	// 	start_latitude : request.body.start_latitude,
-	// 	start_longitude: request.body.start_longitude,
-	// 	end_latitude: request.body.end_latitude,
-	// 	end_longitude: request.body.end_longitude,
-	// 	product_id: "a1111c8c-c720-46c3-8534-2fcdd730040d"
-	// };
-
-	// postAuthorizedRequest('/v1/requests', request.user.accessToken, parameters, function (error, res) {
-	// 	if (error) { console.log(error); }
-	// 	response.json(res);
-	// });
 });
 
-// // logout
-// app.get('/logout', function (request, response) {
-// 	request.logout();
-// 	response.redirect('/login');
-// });
+// logout
+app.get('/logout', ensureAuthenticated, function (request, response) {
+	request.logout();
+	response.redirect('/login');
+});
 
 // route middleware to make sure the request is from an authenticated user
 function ensureAuthenticated (request, response, next) {

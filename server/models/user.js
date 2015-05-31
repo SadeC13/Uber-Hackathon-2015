@@ -12,5 +12,6 @@ var userSchema = new mongoose.Schema({
 	created_at: { type: Date, default: Date.now },
 	token: {type: Schema.Types.ObjectId, ref: 'Token'}
 }); 
-
+userSchema.path('name').required(true, 'User name cannot be blank.');
+userSchema.path('email').required(true, 'User email cannot be blank.');
 mongoose.model('User', userSchema);
